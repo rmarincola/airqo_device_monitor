@@ -23,7 +23,6 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
     all_data = []
 
     while start_time <= end_time:
-        print "starting for {} to {}".format(start_time, end_time)
         full_url = '{}/feeds/?start={}&end={}'.format(
             api_url,
             start_time_string,
@@ -34,6 +33,8 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
         feeds = result['feeds']
         all_data.extend(feeds)
 
+        # If we aren't hitting the max number of results then we
+        # have all of them for the time range and can stop iterating
         if len(feeds) < THINGSPEAK_API_MAX_NUM_RESULTS:
             break
 
