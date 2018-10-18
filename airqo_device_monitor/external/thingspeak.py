@@ -2,17 +2,16 @@ import json, requests
 from datetime import datetime, timedelta
 
 from airqo_device_monitor.constants import (
-    DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS,
-    THINGSPEAK_API_MAX_NUM_RESULTS,
+    DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS,
+    THINGSPEAK_FEEDS_LIST_MAX_NUM_RESULTS,
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
-    MATHWORKS_USER_ID,
 )
 
 
 def get_data_for_channel(channel, start_time=None, end_time=None):
     if not start_time:
-        start_time = datetime.now() - timedelta(days=DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS)
+        start_time = datetime.now() - timedelta(days=DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS)
     if not end_time:
         end_time = datetime.now()
 
@@ -30,12 +29,16 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
         )
         result = make_post_call(full_url)
 
+        # This means we got an empty result set and are done
+        if result == -1:
+            break
+
         feeds = result['feeds']
         all_data.extend(feeds)
 
         # If we aren't hitting the max number of results then we
         # have all of them for the time range and can stop iterating
-        if len(feeds) < THINGSPEAK_API_MAX_NUM_RESULTS:
+        if len(feeds) < THINGSPEAK_FEEDS_LIST_MAX_NUM_RESULTS:
             break
 
         first_result = feeds[0]
@@ -45,8 +48,7 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 
 
 def get_all_channel_ids():
-    url = THINGSPEAK_CHANNELS_LIST_URL.format(MATHWORKS_USER_ID)
-    response = make_get_call(url)
+    response = make_get_call(THINGSPEAK_CHANNELS_LIST_URL)
 
     channels = response['channels']
     channel_ids = [channel['id'] for channel in channels]

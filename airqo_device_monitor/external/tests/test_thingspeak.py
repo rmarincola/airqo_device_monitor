@@ -4,17 +4,12 @@ import unittest
 from datetime import datetime, timedelta
 
 from airqo_device_monitor.constants import (
-    DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS,
-    THINGSPEAK_API_MAX_NUM_RESULTS,
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
-    MATHWORKS_USER_ID,
 )
 from airqo_device_monitor.external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
-    make_get_call,
-    make_post_call,
 )
 
 
@@ -94,4 +89,4 @@ class TestThingspeakAPI(unittest.TestCase):
         channels = get_all_channel_ids()
         assert channels == [1, 2]
 
-        make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL.format(MATHWORKS_USER_ID))
+        make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
