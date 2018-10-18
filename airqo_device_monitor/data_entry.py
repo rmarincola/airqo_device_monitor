@@ -14,3 +14,4 @@ class DataEntry(object):
     latitude = None
     longitute = None
     battery_voltage = None
+    elevation = None
