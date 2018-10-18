@@ -47,11 +47,9 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 def get_all_channel_ids():
     url = THINGSPEAK_CHANNELS_LIST_URL.format(MATHWORKS_USER_ID)
     response = make_get_call(url)
-    channels = response['channels']
 
-    channel_ids = []
-    for channel in channels:
-        channel_ids.append(channel['id'])
+    channels = response['channels']
+    channel_ids = [channel['id'] for channel in channels]
 
     return channel_ids
 
