@@ -12,12 +12,15 @@ from airqo_device_monitor.external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
 )
-from airqo_device_monitor.format_data import get_and_format_data_for_channel
+from airqo_device_monitor.format_data import (
+    get_and_format_data_for_all_channels,
+    get_and_format_data_for_channel,
+)
 
 
 class TestFormatData(unittest.TestCase):
 
-    sample_get_data_for_channel_response = [
+    sample_json_entries = [
         {
             u'field2': u'36.00',
             u'field3': u' 6.30',
@@ -55,7 +58,7 @@ class TestFormatData(unittest.TestCase):
 
     @mock.patch('airqo_device_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel(self, get_data_for_channel_mocker):
-        get_data_for_channel_mocker.return_value = self.sample_get_data_for_channel_response
+        get_data_for_channel_mocker.return_value = self.sample_json_entries
 
         data = get_and_format_data_for_channel(123)
         assert data[0].created_at == '2017-03-26T22:53:55Z'
@@ -74,3 +77,27 @@ class TestFormatData(unittest.TestCase):
 
         assert data[2].channel_id == 123
         assert data[2].entry_id == 3
+
+    @mock.patch('airqo_device_monitor.format_data.get_and_format_data_for_channel')
+    @mock.patch('airqo_device_monitor.format_data.get_all_channel_ids')
+    def test_get_and_format_data_for_all_channels(self, get_all_channel_ids_mocker, get_and_format_data_for_channel_mocker):
+        get_all_channel_ids_mocker.return_value = [123, 456]
+
+        entry = DataEntry(channel_id=123, entry_id=1)
+        entry.latitude = '1'
+        entry.longitute = '1'
+
+        get_and_format_data_for_channel_mocker.return_value = [entry]
+
+        data = get_and_format_data_for_all_channels()
+        assert len(data) == 2
+
+        assert len(data[123]) == 1
+        assert data[123][0].entry_id == 1
+        assert data[123][0].latitude == '1'
+        assert data[123][0].longitute == '1'
+
+        assert len(data[456]) == 1
+        assert data[123][0].entry_id == 1
+        assert data[123][0].latitude == '1'
+        assert data[123][0].longitute == '1'
