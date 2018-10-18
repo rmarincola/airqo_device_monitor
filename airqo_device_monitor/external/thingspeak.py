@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from airqo_device_monitor.constants import (
     DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS,
     THINGSPEAK_API_MAX_NUM_RESULTS,
+    THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
+    MATHWORKS_USER_ID,
 )
 
 
@@ -27,7 +29,7 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
             start_time_string,
             datetime.strftime(end_time,'%Y-%m-%dT%H:%M:%SZ'),
         )
-        result = json.loads(requests.post(full_url).content)
+        result = make_post_call(full_url)
 
         feeds = result['feeds']
         all_data.extend(feeds)
@@ -43,7 +45,7 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 
 def get_all_channel_ids():
     url = THINGSPEAK_CHANNELS_LIST_URL.format(MATHWORKS_USER_ID)
-    response = requests.get(url).content
+    response = make_get_call(url)
     channels = response['channels']
 
     channel_ids = []
@@ -51,3 +53,11 @@ def get_all_channel_ids():
         channel_ids.append(channel['id'])
 
     return channel_ids
+
+
+def make_post_call(url):
+    return json.loads(requests.post(url).content)
+
+
+def make_get_call(url):
+    return json.loads(requests.get(url).content)
