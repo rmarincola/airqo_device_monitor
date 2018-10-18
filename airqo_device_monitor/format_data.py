@@ -41,7 +41,7 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
 
         lat_lng_elevation = entry.get('field8', None)
         if lat_lng_elevation:
-            lat, lng, elevation = parse_lat_lng_elevation(entry['field8'])
+            lat, lng, elevation = parse_lat_lng_elevation(lat_lng_elevation)
             entry_object.latitude = lat
             entry_object.longitute = lng
             entry_object.elevation = elevation
