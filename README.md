@@ -3,7 +3,7 @@ Monitor Airqo devices
 
 # Running Tests
 python -m unittest discover <test_directory>
-python -m unittest discover -s <directory> -p '*_test.py'
+python -m unittest discover -s <test_directory> -p <test_name>
 
 # Requirements
 If you add a new requirement, update them with pip freeze > requirements.txt
