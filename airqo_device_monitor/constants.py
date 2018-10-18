@@ -1,1 +1,2 @@
 THINGSPEAK_API_URL = 'http://thingspeak.com/channels/{}'
+DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS = 7
