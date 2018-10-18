@@ -8,24 +8,33 @@ from airqo_device_monitor.constants import (
 
 
 def get_data_for_channel(channel, start_time=None, end_time=None):
+    import pdb; pdb.set_trace()
     if not start_time:
         start_time = datetime.now() - timedelta(days=DEFAULT_THINGSPEAK_DATA_INTERVAL_DAYS)
     if not end_time:
         end_time = datetime.now()
 
+    # convert to string before the loop because this never changes
+    end_time_string = datetime.strftime(end_time,'%Y-%m-%dT%H:%M:%SZ')
+
     api_url = THINGSPEAK_API_URL.format(channel)
     all_data = []
 
     while start_time < end_time:
-        full_url = '{}/feeds/?start={}&end={}'.format(api_url, start_time, end_time)
+        full_url = '{}/feeds/?start={}&end={}'.format(
+            api_url,
+            datetime.strftime(start_time,'%Y-%m-%dT%H:%M:%SZ'),
+            end_time_string,
+        )
         result = json.loads(requests.post(full_url).content)
 
-        alldata.extend(data['feeds'])
+        feeds = result['feeds']
+        all_data.extend(feeds)
 
-        if len(result) < 8000:
+        if len(feeds) < 8000:
             break
 
-        last_result = result[len(result)-1]
+        last_result = feeds[len(feeds)-1]
         start_time = datetime.strptime(last_result['created_at'],'%Y-%m-%dT%H:%M:%SZ')
 
     return all_data
@@ -33,7 +42,8 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 
 # import pdb; pdb.set_trace()
 print "running..."
-print get_data_for_channel(295702)
+data = get_data_for_channel(295702, start_time=datetime.now()-timedelta(days=100))
+import pdb; pdb.set_trace()
 
 # nextid = 1
 # result = None
