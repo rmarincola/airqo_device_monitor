@@ -1,8 +1,8 @@
-from airqo_device_monitor.external.thingspeak import (
+from external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
 )
-from airqo_device_monitor.models.data_entry import DataEntry
+from models.data_entry import DataEntry
 
 
 def parse_field8_metadata(field8):

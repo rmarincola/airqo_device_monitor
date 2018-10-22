@@ -3,11 +3,11 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from airqo_device_monitor.constants import (
+from constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
-from airqo_device_monitor.external.thingspeak import (
+from external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
 )
@@ -55,7 +55,7 @@ class TestThingspeakAPI(unittest.TestCase):
             ]
     }
 
-    @mock.patch('airqo_device_monitor.external.thingspeak.make_post_call')
+    @mock.patch('external.thingspeak.make_post_call')
     def test_get_data_for_channel_basic(self, make_post_call_mocker):
         make_post_call_mocker.return_value = self.sample_feeds_list_response
 
@@ -63,7 +63,7 @@ class TestThingspeakAPI(unittest.TestCase):
 
         assert len(result) == 3
 
-    @mock.patch('airqo_device_monitor.external.thingspeak.make_post_call')
+    @mock.patch('external.thingspeak.make_post_call')
     def test_get_data_for_channel_with_times(self, make_post_call_mocker):
         make_post_call_mocker.return_value = self.sample_feeds_list_response
 
@@ -82,7 +82,7 @@ class TestThingspeakAPI(unittest.TestCase):
             end_time_string
         ))
 
-    @mock.patch('airqo_device_monitor.external.thingspeak.make_get_call')
+    @mock.patch('external.thingspeak.make_get_call')
     def test_get_all_channel_ids(self, make_get_call_mocker):
         make_get_call_mocker.return_value = {
             "channels": [dict(id=1, name='AIRQO'), dict(id=2, name='AIRQO')]
@@ -93,7 +93,7 @@ class TestThingspeakAPI(unittest.TestCase):
 
         make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
 
-    @mock.patch('airqo_device_monitor.external.thingspeak.make_get_call')
+    @mock.patch('external.thingspeak.make_get_call')
     def test_get_all_channel_ids_filters_correct_channels(self, make_get_call_mocker):
         make_get_call_mocker.return_value = {
             "channels": [
