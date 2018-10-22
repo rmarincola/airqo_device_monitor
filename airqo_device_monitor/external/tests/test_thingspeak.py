@@ -84,9 +84,27 @@ class TestThingspeakAPI(unittest.TestCase):
 
     @mock.patch('airqo_device_monitor.external.thingspeak.make_get_call')
     def test_get_all_channel_ids(self, make_get_call_mocker):
-        make_get_call_mocker.return_value = {"channels": [dict(id=1), dict(id=2)]}
+        make_get_call_mocker.return_value = {
+            "channels": [dict(id=1, name='AIRQO'), dict(id=2, name='AIRQO')]
+        }
 
         channels = get_all_channel_ids()
         assert channels == [1, 2]
+
+        make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
+
+    @mock.patch('airqo_device_monitor.external.thingspeak.make_get_call')
+    def test_get_all_channel_ids_filters_correct_channels(self, make_get_call_mocker):
+        make_get_call_mocker.return_value = {
+            "channels": [
+                dict(id=1, name='AIRQO Test - ACTIVE'),
+                dict(id=2, name='AIRQO Test - INACTIVE'),
+                dict(id=3, name='Test - ACTIVE'),
+                dict(id=4, name='Test - INACTIVE'),
+            ]
+        }
+
+        channels = get_all_channel_ids()
+        assert channels == [1]
 
         make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
