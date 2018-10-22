@@ -4,8 +4,8 @@ from flask import (
     render_template,
 )
 
-from airqo_device_monitor.external.thingspeak import get_all_channel_ids
-from airqo_device_monitor.get_malfunctions import get_all_channel_malfunctions
+from external.thingspeak import get_all_channel_ids
+from get_malfunctions import get_all_channel_malfunctions
 
 app = Flask(__name__)
 
