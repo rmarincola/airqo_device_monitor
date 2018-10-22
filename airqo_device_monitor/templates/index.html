@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <script src="/js/index.js"></script>
+    <meta charset="utf-8">
+    <title>Flask Tutorial</title>
+  </head>
+  <body>
+    <h1> My First Try Using Flask </h1>
+    <p> Flask is Fun </p>
+    <p>channels that need attention: {{ malfunctions }}</p>
+    <ul>
+    {% for item in malfunctions %}
+        <p> {{ item }} </p>
+        <p> {{ item.value }} </p>
+    {% endfor %}
+    </ul>
+    <p>printMalfunction()</p>
+  </body>
+</html>
