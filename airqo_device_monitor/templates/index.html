@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script type="text/javascript" src="index.js"></script>
     <meta charset="utf-8">
     <title>Device Malfunction Monitor</title>
   </head>
   <body>
-    <script type="text/javascript" src="index.js"></script>
     <h1> Device Malfunction Monitor </h1>
 
     {% if malfunctioning_channels %}
@@ -19,7 +17,7 @@
                     <ul>
                         <li>
                             {% for reason in channel.possible_malfunction_reasons %}
-                                <p> {{ reasonKeyToFriendlyDescription(reason) }} </p>
+                                <p> {{ reason }} </p>
                             {% endfor %}
                         </li>
                     </ul>
@@ -31,8 +29,3 @@
     {% endif %}
   </body>
 </html>
-
-<script type="text/javascript" src="index.js"></script>
-<!-- <script type="text/javascript">
-    var friendly_malfunction_reasons_dict = {'no_data': 'There is no data'}
-</script> -->
