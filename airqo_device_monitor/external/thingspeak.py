@@ -2,7 +2,9 @@ import json, requests
 from datetime import datetime, timedelta
 
 from airqo_device_monitor.constants import (
+    AIR_QUALITY_MONITOR_KEYWORD,
     DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS,
+    INACTIVE_MONITOR_KEYWORD,
     THINGSPEAK_FEEDS_LIST_MAX_NUM_RESULTS,
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
@@ -48,10 +50,19 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 
 
 def get_all_channel_ids():
+    """
+    Get all relevant channels to this tool (channels with AIRQO and without INACTIVE in the name)
+    """
     response = make_get_call(THINGSPEAK_CHANNELS_LIST_URL)
 
     channels = response['channels']
-    channel_ids = [channel['id'] for channel in channels]
+
+    channel_ids = []
+
+    for channel in channels:
+        name = channel['name']
+        if AIR_QUALITY_MONITOR_KEYWORD in name and INACTIVE_MONITOR_KEYWORD not in name:
+            channel_ids.append(channel['id'])
 
     return channel_ids
 
