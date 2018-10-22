@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from airqo_device_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
+    LOW_BATTERY_CUTOFF,
+    SENSOR_PM_2_5_MIN_CUTOFF,
+    SENSOR_PM_2_5_MAX_CUTOFF,
 )
 from airqo_device_monitor.data_entry import DataEntry
 from airqo_device_monitor.get_malfunctions import (
@@ -15,7 +18,6 @@ from airqo_device_monitor.get_malfunctions import (
     _sensor_is_reporting_outliers,
     get_all_channel_malfunctions,
 )
-
 
 class TestGetMalfunctions(unittest.TestCase):
 
@@ -82,13 +84,15 @@ class TestGetMalfunctions(unittest.TestCase):
     def test_has_low_battery(self):
         assert _has_low_battery(self.sample_channel_data) == False
 
-        self.sample_channel_data[-1].battery_voltage = u'3.10'
+        # Set a voltage below the cutoff.
+        self.sample_channel_data[-1].battery_voltage = str(LOW_BATTERY_CUTOFF - 0.1)
         assert _has_low_battery(self.sample_channel_data) == True
 
 
     def test_has_low_reporting_frequency(self):
         assert _has_low_reporting_frequency(self.sample_channel_data) == True
 
+        # Make the created_at time stamps now so that they look frequent.
         now = datetime.utcnow()
         now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
         self.sample_channel_data[0].created_at = now_str
@@ -100,10 +104,11 @@ class TestGetMalfunctions(unittest.TestCase):
     def test_sensor_is_reporting_outliers(self):
         assert _sensor_is_reporting_outliers(self.sample_channel_data) == False
 
-        self.sample_channel_data[0].pm_2_5 = u'0.80'
+
+        self.sample_channel_data[0].pm_2_5 = str(SENSOR_PM_2_5_MIN_CUTOFF - 0.1)
         assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
 
-        self.sample_channel_data[0].pm_2_5 = u'1000.80'
+        self.sample_channel_data[0].pm_2_5 = str(SENSOR_PM_2_5_MAX_CUTOFF + 0.1)
         assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
 
 
@@ -114,24 +119,3 @@ class TestGetMalfunctions(unittest.TestCase):
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
 
         assert get_all_channel_malfunctions() == [{'123': ['reporting_outliers']}]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
