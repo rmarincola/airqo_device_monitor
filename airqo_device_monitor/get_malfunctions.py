@@ -1,28 +1,50 @@
-from airqo_device_monitor.format_data import get_and_format_data_for_all_channels
 from datetime import datetime, timedelta
+
+from airqo_device_monitor.format_data import get_and_format_data_for_all_channels
+from airqo_device_monitor.constants import (
+    LOW_BATTERY_CUTOFF,
+    NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
+    SENSOR_PM_2_5_MIN_CUTOFF,
+    SENSOR_PM_2_5_MAX_CUTOFF,
+    ALLOWABLE_OUTLIER_SENSOR_RATIO,
+    NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
+    MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
+)
 
 
 def _get_channel_malfunctions(channel_data):
-    """Use channel_data to get a list of malfunctions that may be occuring with a channel."""
+    """Use channel_data to get a list of malfunctions that may be occuring with a channel.
+
+    Returns: a list of potential malfunctions. Potential malfunctions include:
+        - "low_battery_voltage": Channel data indicates that the device is running low on battery
+        - "low_reporting_frequency": The device is not reporting data fast enough or at all.
+        - "reporting_outliers": The sensor is reporting readings that are outside a reasonable range.
+    """
     malfunction_list = []
-    if _has_low_battery(channel_data):
-        malfunction_list.append("low_battery_voltage")
-    if _has_low_reporting_frequency(channel_data):
-        malfunction_list.append("low_reporting_frequency")
-    if _sensor_is_reporting_outliers(channel_data):
-        malfunction_list.append("reporting_outliers")
+    if len(channel_data) == 0:
+        malfunction_list.append("no_data")
+    else:
+        if _has_low_battery(channel_data):
+            malfunction_list.append("low_battery_voltage")
+        if _has_low_reporting_frequency(channel_data):
+            malfunction_list.append("low_reporting_frequency")
+        if _sensor_is_reporting_outliers(channel_data):
+            malfunction_list.append("reporting_outliers")
+
     return malfunction_list
 
 
 def _has_low_battery(channel_data):
-    """Determine whether the channel has low battery."""
+    """Determine whether the channel has low battery. channel_data can't be empty."""
+    assert len(channel_data) > 0
     last_voltage = float(channel_data[-1].battery_voltage)
     return last_voltage < LOW_BATTERY_CUTOFF
 
 
 def _has_low_reporting_frequency(channel_data):
     """Determine whether the channel is reporting data at a lower frequency than expected."""
-    index_to_verify = min(len(channel_data), NUM_REPORTS_TO_VERIFY_MALFUNCTION)
+    assert len(channel_data) > 0
+    index_to_verify = min(len(channel_data), NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION)
     report_to_verify = channel_data[-1 * index_to_verify]
     report_timestamp = datetime.strptime(report_to_verify.created_at, '%Y-%m-%dT%H:%M:%SZ')
 
@@ -39,11 +61,10 @@ def _sensor_is_reporting_outliers(channel_data):
 
     Presence of outlier points may indicated an obstructed sensor.
     """
+    assert len(channel_data) > 0
     num_points = min(NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION, len(channel_data))
     is_outlier = lambda pm_2_5: pm_2_5 < SENSOR_PM_2_5_MIN_CUTOFF or pm_2_5 > SENSOR_PM_2_5_MAX_CUTOFF
     extreme_reads = [entry for entry in channel_data[-1 * num_points:] if is_outlier(float(entry.pm_2_5))]
-    for point in extreme_reads:
-        print point.pm_2_5
     return len(extreme_reads) > num_points * ALLOWABLE_OUTLIER_SENSOR_RATIO
 
 def get_all_channel_malfunctions():
@@ -51,15 +72,10 @@ def get_all_channel_malfunctions():
 
     Returns: A dict keyed by the channel id. The value is a list of potential concerns about a sensor.
     """
-    malfunctions = {}
+    malfunctions = []
     start_time = datetime.utcnow() - timedelta(days=1)
-    all_data = get_and_format_data_for_all_channels(start_time=start_time)
-    empty_channels = [key for key in data.keys() if len(data[key]) == 0]
-    for channel_id in empty_channels:
-        malfunctions[channel_id] = ["no_data"]
-
-    usable_data = {key: val for key, val in data.items() if len(val) > 0}
-    for channel_id, channel_data in public_data.items():
-        malfunctions[channel_id] = _get_channel_malfunctions(channel_data)
+    data = get_and_format_data_for_all_channels(start_time=start_time)
+    for channel_id, channel_data in data.items():
+        malfunctions.append({channel_id: _get_channel_malfunctions(channel_data)})
 
     return malfunctions

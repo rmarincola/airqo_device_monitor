@@ -69,7 +69,7 @@ class TestFormatData(unittest.TestCase):
         assert data[0].pm_10 == ' 6.30'
         assert data[0].sample_period == ' 3400.07'
         assert data[0].latitude == '172'
-        assert data[0].longitute == '1'
+        assert data[0].longitude == '1'
         assert data[0].battery_voltage == '16'
 
         assert data[1].channel_id == 123
@@ -94,7 +94,7 @@ class TestFormatData(unittest.TestCase):
         assert data[0].pm_10 == ' 6.30'
         assert data[0].sample_period == ' 3400.07'
         assert data[0].latitude == '6'
-        assert data[0].longitute == '7'
+        assert data[0].longitude == '7'
         assert data[0].battery_voltage == '16'
         assert data[0].elevation == '8'
 
@@ -113,7 +113,7 @@ class TestFormatData(unittest.TestCase):
 
         entry = DataEntry(channel_id=123, entry_id=1)
         entry.latitude = '1'
-        entry.longitute = '1'
+        entry.longitude = '1'
 
         get_and_format_data_for_channel_mocker.return_value = [entry]
 
@@ -123,9 +123,9 @@ class TestFormatData(unittest.TestCase):
         assert len(data[123]) == 1
         assert data[123][0].entry_id == 1
         assert data[123][0].latitude == '1'
-        assert data[123][0].longitute == '1'
+        assert data[123][0].longitude == '1'
 
         assert len(data[456]) == 1
         assert data[456][0].entry_id == 1
         assert data[456][0].latitude == '1'
-        assert data[456][0].longitute == '1'
+        assert data[456][0].longitude == '1'
