@@ -10,7 +10,7 @@ from airqo_device_monitor.constants import (
     SENSOR_PM_2_5_MIN_CUTOFF,
     SENSOR_PM_2_5_MAX_CUTOFF,
 )
-from airqo_device_monitor.data_entry import DataEntry
+from airqo_device_monitor.models.data_entry import DataEntry
 from airqo_device_monitor.get_malfunctions import (
     _get_channel_malfunctions,
     _has_low_battery,
