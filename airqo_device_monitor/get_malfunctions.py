@@ -24,9 +24,14 @@ def _has_low_reporting_frequency(channel_data):
     """Determine whether the channel is reporting data at a lower frequency than expected."""
     index_to_verify = min(len(channel_data), NUM_REPORTS_TO_VERIFY_MALFUNCTION)
     report_to_verify = channel_data[-1 * index_to_verify]
-    time_to_submit_reports = datetime.strptime(report_to_verify.created_at, '%Y-%m-%dT%H:%M:%SZ')
-    cutoff_time = datetime.utcnow() - timedelta(MAXIMUM_MINUTES_PER_REPORT * index_to_verify)
-    return time_to_submit_reports < cutoff_time
+    report_timestamp = datetime.strptime(report_to_verify.created_at, '%Y-%m-%dT%H:%M:%SZ')
+
+    # The cutoff time is now minus MINIMUM_REPORT_FREQUENCY_SECONDS seconds per report being evaluated.
+    # The number of reports being evaluated is determined by the index_to_verify.
+    cutoff_time = datetime.utcnow() - timedelta(seconds=MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS * index_to_verify)
+
+    # If the report timestamp is earlier than the cutoff time, that means that the
+    return report_timestamp < cutoff_time
 
 
 def _sensor_is_reporting_outliers(channel_data):
