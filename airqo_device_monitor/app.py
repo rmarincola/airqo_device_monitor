@@ -5,6 +5,7 @@ from flask import (
 )
 
 from airqo_device_monitor.external.thingspeak import get_all_channel_ids
+# from airqo_device_monitor.get_malfunctions import get_all_channel_malfunctions
 
 app = Flask(__name__)
 
