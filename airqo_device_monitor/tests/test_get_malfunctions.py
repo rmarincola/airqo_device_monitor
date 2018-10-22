@@ -118,4 +118,9 @@ class TestGetMalfunctions(unittest.TestCase):
         get_and_format_data_for_all_channels_mocker.return_value =  {'123': self.sample_channel_data}
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
 
-        assert get_all_channel_malfunctions() == [{'123': ['reporting_outliers']}]
+        assert get_all_channel_malfunctions() == [
+            {
+                "channel_id": '123',
+                "possible_malfunction_reasons": ['reporting_outliers'],
+            }
+        ]
