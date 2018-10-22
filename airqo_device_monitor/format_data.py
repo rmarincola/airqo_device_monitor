@@ -2,7 +2,7 @@ from airqo_device_monitor.external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
 )
-from airqo_device_monitor.data_entry import DataEntry
+from airqo_device_monitor.models.data_entry import DataEntry
 
 
 def parse_lat_lng_elevation(lat_lng_elevation_str):
