@@ -25,4 +25,8 @@ class DataEntry(object):
     latitude = None
     longitude = None
     battery_voltage = None
-    elevation = None
+    altitude = None  # meters
+    speed = None  # mps
+    num_satellites = None
+    hdop = None  # horizontal dilution of precision
+    is_mobile = None

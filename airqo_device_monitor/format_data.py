@@ -5,11 +5,11 @@ from airqo_device_monitor.external.thingspeak import (
 from airqo_device_monitor.models.data_entry import DataEntry
 
 
-def parse_lat_lng_elevation(lat_lng_elevation_str):
+def parse_field8_metadata(field8):
     """
-    Parse string formatted lat,lng,elevation into three variables
+    Parse string formatted lat,lng,elevation,speed (in mps),num_satellites,hdop into six variables
     """
-    return lat_lng_elevation_str.split(',')
+    return field8.split(',')
 
 
 def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
@@ -23,7 +23,7 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
     field5: latitude
     field6: longtitude
     field7: battery voltage
-    field8 (optional): lat,lng,elevation
+    field8 (optional): lat,lng,elevation,speed,num_satellites,hdop
     """
     data = get_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
     entry_objects = []
@@ -39,15 +39,21 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
         entry_object.sample_period = entry['field4']
         entry_object.battery_voltage = entry['field7']
 
-        lat_lng_elevation = entry.get('field8', None)
-        if lat_lng_elevation:
-            lat, lng, elevation = parse_lat_lng_elevation(lat_lng_elevation)
+        field8 = entry.get('field8', None)
+        if field8:
+            lat, lng, altitude, speed, num_satellites, hdop = parse_field8_metadata(field8)
             entry_object.latitude = lat
             entry_object.longitude = lng
-            entry_object.elevation = elevation
+            entry_object.altitude = altitude
+            entry_object.speed = speed
+            entry_object.num_satellites = num_satellites
+            entry_object.hdop = hdop
         else:
             entry_object.latitude = entry['field5']
             entry_object.longitude = entry['field6']
+
+        # we currently only have stationary devices active
+        entry_object.is_mobile = False
 
         entry_objects.append(entry_object)
     return entry_objects

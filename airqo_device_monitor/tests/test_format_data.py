@@ -71,6 +71,7 @@ class TestFormatData(unittest.TestCase):
         assert data[0].latitude == '172'
         assert data[0].longitude == '1'
         assert data[0].battery_voltage == '16'
+        assert data[0].is_mobile is False
 
         assert data[1].channel_id == 123
         assert data[1].entry_id == 2
@@ -81,7 +82,7 @@ class TestFormatData(unittest.TestCase):
     @mock.patch('airqo_device_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel_with_field8(self, get_data_for_channel_mocker):
         sample_json_entries = self.sample_json_entries
-        sample_json_entries[0]['field8'] = '6,7,8'
+        sample_json_entries[0]['field8'] = '6,7,8,9,10,11'
 
         get_data_for_channel_mocker.return_value = sample_json_entries
 
@@ -96,15 +97,24 @@ class TestFormatData(unittest.TestCase):
         assert data[0].latitude == '6'
         assert data[0].longitude == '7'
         assert data[0].battery_voltage == '16'
-        assert data[0].elevation == '8'
+        assert data[0].altitude == '8'
+        assert data[0].speed == '9'
+        assert data[0].num_satellites == '10'
+        assert data[0].hdop == '11'
 
         assert data[1].channel_id == 123
         assert data[1].entry_id == 2
-        assert data[1].elevation is None
+        assert data[1].altitude is None
+        assert data[2].speed is None
+        assert data[2].num_satellites is None
+        assert data[2].hdop is None
 
         assert data[2].channel_id == 123
         assert data[2].entry_id == 3
-        assert data[2].elevation is None
+        assert data[2].altitude is None
+        assert data[2].speed is None
+        assert data[2].num_satellites is None
+        assert data[2].hdop is None
 
     @mock.patch('airqo_device_monitor.format_data.get_and_format_data_for_channel')
     @mock.patch('airqo_device_monitor.format_data.get_all_channel_ids')
