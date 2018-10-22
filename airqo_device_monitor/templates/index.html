@@ -1,20 +1,38 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html>
   <head>
-    <script src="/js/index.js"></script>
+    <script type="text/javascript" src="index.js"></script>
     <meta charset="utf-8">
-    <title>Flask Tutorial</title>
+    <title>Device Malfunction Monitor</title>
   </head>
   <body>
-    <h1> My First Try Using Flask </h1>
-    <p> Flask is Fun </p>
-    <p>channels that need attention: {{ malfunctions }}</p>
-    <ul>
-    {% for item in malfunctions %}
-        <p> {{ item }} </p>
-        <p> {{ item.value }} </p>
-    {% endfor %}
-    </ul>
-    <p>printMalfunction()</p>
+    <script type="text/javascript" src="index.js"></script>
+    <h1> Device Malfunction Monitor </h1>
+
+    {% if malfunctioning_channels %}
+        <p> The following channels need attention:</p>
+        <ul>
+            {% for channel in malfunctioning_channels %}
+                <li>
+                    <p><strong> Channel ID: {{ channel.channel_id }} </strong></p>
+                    <p>Reason for getting triggered:</p>
+                    <ul>
+                        <li>
+                            {% for reason in channel.possible_malfunction_reasons %}
+                                <p> {{ reasonKeyToFriendlyDescription(reason) }} </p>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        Woohoo! looks there are no malfunctions detected
+    {% endif %}
   </body>
 </html>
+
+<script type="text/javascript" src="index.js"></script>
+<!-- <script type="text/javascript">
+    var friendly_malfunction_reasons_dict = {'no_data': 'There is no data'}
+</script> -->
