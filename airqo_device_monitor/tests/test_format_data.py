@@ -7,7 +7,7 @@ from airqo_device_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
-from airqo_device_monitor.data_entry import DataEntry
+from airqo_device_monitor.models.data_entry import DataEntry
 from airqo_device_monitor.external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
