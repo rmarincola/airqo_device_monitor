@@ -19,6 +19,7 @@ def _get_channel_malfunctions(channel_data):
         - "low_battery_voltage": Channel data indicates that the device is running low on battery
         - "low_reporting_frequency": The device is not reporting data fast enough or at all.
         - "reporting_outliers": The sensor is reporting readings that are outside a reasonable range.
+        - "no_data": The channel_data list was empty.
     """
     malfunction_list = []
     if len(channel_data) == 0:
@@ -52,7 +53,8 @@ def _has_low_reporting_frequency(channel_data):
     # The number of reports being evaluated is determined by the index_to_verify.
     cutoff_time = datetime.utcnow() - timedelta(seconds=MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS * index_to_verify)
 
-    # If the report timestamp is earlier than the cutoff time, that means that the
+    # If the report timestamp is earlier than the cutoff time, that means that there is too much time passing
+    # between each point being reported.
     return report_timestamp < cutoff_time
 
 
